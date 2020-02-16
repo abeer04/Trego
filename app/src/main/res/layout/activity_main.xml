@@ -8,7 +8,6 @@
     android:background="@color/gradient_background"
     tools:context=".MainActivity"
     >
-
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -23,8 +22,13 @@
                     android:theme="@style/AppTheme"
                     android:orientation="vertical">
 
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/icon_launcher_foreground">
+                    </ImageView>
+
                     <TextView
-                        android:layout_marginTop="10dp"
                         android:textColor="#fff"
                         android:textSize="40dp"
                         android:id="@+id/appname"
@@ -38,7 +42,6 @@
                         android:layout_width="300dp"
                         android:layout_height="wrap_content"
                         app:mtf_cardCollapsedHeight="1dp"
-
                         app:mtf_labelColor="@color/colorAccent"
                         app:mtf_image="@drawable/email">
 
@@ -72,7 +75,6 @@
 
                     </com.github.florent37.materialtextfield.MaterialTextField>
 
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -80,14 +82,12 @@
                         android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
-
                         <Button
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/login"
                             android:text="login"
                             style="@style/AppTheme.RoundedCornerMaterialButton" />
-
                     </LinearLayout>
 
                     <LinearLayout
@@ -96,17 +96,7 @@
                         android:gravity="center_horizontal"
                         android:layout_marginTop="20dp"
                         android:orientation="horizontal">
-
-
                     </LinearLayout>
-
                 </LinearLayout>
-
             </ScrollView>
-
         </RelativeLayout>
-
-
-
-
-

@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,13 +34,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class maps extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, View.OnClickListener {
+public class maps extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, View.OnClickListener, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     TextView address;
@@ -78,13 +82,12 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         done.setOnClickListener(this);
     }
 
-    public void restult_back(String result){
+    public void restult_back(String result) {
         Intent intent = new Intent();
         intent.putExtra("address", result);
         setResult(RESULT_OK, intent);
         this.finish();
     }
-
 
     /**
      * Manipulates the map once available.
@@ -97,7 +100,6 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         mMap = googleMap;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -108,30 +110,35 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
                     @Override
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-
+                        if (location != null)
+                        {
                             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
                             mMap.setMinZoomPreference(15);
                             url="https://maps.googleapis.com/maps/api/geocode/json?latlng="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyBAyEhcJM_a1riCY88giw-C5DhJRJiokmY";
                             Request();
-
-
                         }
                         else
                         {
                             Toast.makeText(maps.this, "Cant't get your current Location, GPS not supported by emulator",
                                     Toast.LENGTH_LONG).show();
                         }
-
                     }
 
                 });
-        // Add a marker in Sydney and move the camera
+
+        // Add a marker in FCC
+        final LatLng fccMainGround = new LatLng(31.522009, 74.3328702);
+
+        final Marker marker = mMap.addMarker(new MarkerOptions()
+                .position(fccMainGround)
+                .title("Plant 1!")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant)));
+        // icon reference => <a href='https://pngtree.com/so/flower'>flower png from pngtree.com</a>
+
+        mMap.setOnMarkerClickListener(this);
 
         mMap.setOnCameraIdleListener(this);
-
     }
-
 
     @Override
     public void onCameraIdle() {
@@ -145,35 +152,25 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     @Override
     public void onClick(View v) {
-
         restult_back(formatted_address);
-
     }
-
-
 
     @Override
     public void onBackPressed() {
-
-
         restult_back("-1");
-
         super.onBackPressed();
     }
 
-
-    void Request(){
+    void Request() {
         requestQueue= Volley.newRequestQueue(this);
         addressRes= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
                 try {
-
                     Object responseA;
                     responseA=response.getJSONArray("results").get(0);
                     formatted_address=((JSONObject) responseA).getString("formatted_address");
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -191,8 +188,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         requestQueue.add(addressRes);
     }
 
-
-    private boolean checkMapServices(){
+    private boolean checkMapServices() {
         if(isServicesOK()){
             if(isMapsEnabled()){
                 return true;
@@ -210,13 +206,12 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
                     Toast.LENGTH_LONG).show();
             return false;
         }
-
     }
 
     public boolean isMapsEnabled(){
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
-        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             return false;
         }
         return true;
@@ -232,10 +227,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-
-
         } else {
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))
                 {
@@ -293,5 +285,11 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        return false;
     }
 }
