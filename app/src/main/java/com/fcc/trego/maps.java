@@ -10,6 +10,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -34,6 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -43,7 +46,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class maps extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, View.OnClickListener, GoogleMap.OnMarkerClickListener {
+public class maps extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, View.OnClickListener {
 
     private GoogleMap mMap;
     TextView address;
@@ -57,23 +60,30 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
     String url;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        if (checkMapServices()) {
+        if (checkMapServices())
+        {
             getLocationPermission();
 
-            if (mLocationPermissionGranted) {
+            if (mLocationPermissionGranted)
+            {
                 fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
                 // Obtain the SupportMapFragment and get notified when the map is ready to be used.
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.home_map);
                 mapFragment.getMapAsync(this);
-            } else {
+            }
+            else
+            {
                 restult_back("-1");
             }
-        } else {
+        }
+        else
+        {
             restult_back("-1");
         }
 
@@ -82,7 +92,8 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         done.setOnClickListener(this);
     }
 
-    public void restult_back(String result) {
+    public void restult_back(String result)
+    {
         Intent intent = new Intent();
         intent.putExtra("address", result);
         setResult(RESULT_OK, intent);
@@ -99,11 +110,12 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap)
+    {
         mMap = googleMap;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            // TODO: Consider calling ActivityCompat#requestPermissions
         }
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -127,51 +139,92 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
                 });
 
         // Add a marker in FCC
-        final LatLng fccMainGround = new LatLng(31.522009, 74.3328702);
+        int width = 50, height = 50;
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.plant);
+        Bitmap smBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+        BitmapDescriptor smMarkerIcon = BitmapDescriptorFactory.fromBitmap(smBitmap);
 
-        final Marker marker = mMap.addMarker(new MarkerOptions()
+        LatLng fccMainGround = new LatLng(31.522009, 74.3328702);
+        Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(fccMainGround)
                 .title("Plant 1!")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.plant)));
+                .icon(smMarkerIcon));
         // icon reference => <a href='https://pngtree.com/so/flower'>flower png from pngtree.com</a>
 
-        mMap.setOnMarkerClickListener(this);
+//        mMap.setOnMarkerClickListener(this);
+
+        // Setting a custom info window adapter for the google map
+        MarkerInfoWindowAdapter markerInfoWindowAdapter = new MarkerInfoWindowAdapter(getApplicationContext());
+        mMap.setInfoWindowAdapter(markerInfoWindowAdapter);
+
+        View view = markerInfoWindowAdapter.getInfoContents(marker);
+        Button plantBtn = view.findViewById(R.id.btn_plant);
+
+        plantBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(maps.this, ScanQR.class);
+                startActivity(intent);
+            }
+        });
+
+        // adding and showing marker when the map is touched
+//        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
+//        {
+//            @Override
+//            public void onMapClick(LatLng arg0)
+//            {
+//                mMap.clear();
+//                MarkerOptions markerOptions = new MarkerOptions();
+//                markerOptions.position(arg0);
+//                mMap.animateCamera(CameraUpdateFactory.newLatLng(arg0));
+//                Marker marker = mMap.addMarker(markerOptions);
+//                marker.showInfoWindow();
+//            }
+//        });
 
         mMap.setOnCameraIdleListener(this);
     }
 
     @Override
-    public void onCameraIdle() {
+    public void onCameraIdle()
+    {
         final LatLng mPosition;
         mPosition = mMap.getCameraPosition().target;
-        url="https://maps.googleapis.com/maps/api/geocode/json?latlng="+mPosition.latitude+","+mPosition.longitude+"&key=AIzaSyBAyEhcJM_a1riCY88giw-C5DhJRJiokmY";
+        url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+mPosition.latitude+","+mPosition.longitude+"&key=AIzaSyBAyEhcJM_a1riCY88giw-C5DhJRJiokmY";
         Request();
-
-
     }
 
     @Override
     public void onClick(View v) {
-        restult_back(formatted_address);
+//        restult_back(formatted_address);
+        Intent intent = new Intent(maps.this, ScanQR.class);
+        startActivity(intent);
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         restult_back("-1");
         super.onBackPressed();
     }
 
-    void Request() {
+    void Request()
+    {
         requestQueue= Volley.newRequestQueue(this);
         addressRes= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-
-                try {
+                try
+                {
                     Object responseA;
-                    responseA=response.getJSONArray("results").get(0);
-                    formatted_address=((JSONObject) responseA).getString("formatted_address");
-                } catch (JSONException e) {
+                    responseA = response.getJSONArray("results").get(0);
+                    formatted_address = ((JSONObject) responseA).getString("formatted_address");
+                }
+                catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
                 address.setText(formatted_address);
@@ -188,73 +241,81 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         requestQueue.add(addressRes);
     }
 
-    private boolean checkMapServices() {
-        if(isServicesOK()){
-            if(isMapsEnabled()){
+    private boolean checkMapServices()
+    {
+        if(isServicesOK())
+        {
+            if(isMapsEnabled())
+            {
                 return true;
             }
             else
             {
-                Toast.makeText(this, "Turn on GPS",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Turn on GPS", Toast.LENGTH_LONG).show();
                 return false;
             }
         }
         else
         {
-            Toast.makeText(this, "Update/Install Google Play Services",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Update/Install Google Play Services", Toast.LENGTH_LONG).show();
             return false;
         }
     }
 
-    public boolean isMapsEnabled(){
+    public boolean isMapsEnabled()
+    {
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
             return false;
         }
         return true;
     }
 
-    private void getLocationPermission() {
+    private void getLocationPermission()
+    {
         /*
          * Request location permission, so that we can get the location of the
          * device. The result of the permission request is handled by a callback,
          * onRequestPermissionsResult.
          */
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
             mLocationPermissionGranted = true;
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        }
+        else
+        {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            {
                 if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))
                 {
                     Toast.makeText(this, "Location Permission required to use this feature",
                             Toast.LENGTH_LONG).show();
                 }
 
-                ActivityCompat.requestPermissions(maps.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        003);
+                ActivityCompat.requestPermissions(maps.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},003);
             }
         }
     }
 
-    public boolean isServicesOK(){
-
+    public boolean isServicesOK()
+    {
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
 
-        if(available == ConnectionResult.SUCCESS){
-            //everything is fine and the user can make map requests
+        if(available == ConnectionResult.SUCCESS)
+        {
+            // everything is fine and the user can make map requests
             return true;
         }
-        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-            //an error occured but we can resolve it
+        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available))
+        {
+            // an error occurred but we can resolve it
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(maps.this, available,004 );
             dialog.show();
-        }else{
+        }
+        else
+        {
             Toast.makeText(this, "Update/Install Google Play Services", Toast.LENGTH_SHORT).show();
         }
         return false;
@@ -263,33 +324,30 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults)
+    {
         mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case 003: {
+
+        switch (requestCode)
+        {
+            case 003:
+            {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
                     mLocationPermissionGranted = true;
                 }
                 else
                 {
-                    Toast.makeText(this, "Location Permission required to use this feature",
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Location Permission required to use this feature", Toast.LENGTH_LONG).show();
                 }
-
             }
         }
     }
 
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
+    public void onPointerCaptureChanged(boolean hasCapture)
+    {
 
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-
-        return false;
     }
 }
