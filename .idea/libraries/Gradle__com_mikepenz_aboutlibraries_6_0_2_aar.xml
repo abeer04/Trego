@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.mikepenz:aboutlibraries:6.0.2@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/66d2f8858e9acb20f3f3740a75a62106/jetified-aboutlibraries-6.0.2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/66d2f8858e9acb20f3f3740a75a62106/jetified-aboutlibraries-6.0.2/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mikepenz/aboutlibraries/6.0.2/f9f90602ac14e0919b7d8557dafadb5b36d6f421/aboutlibraries-6.0.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mikepenz/aboutlibraries/6.0.2/5debe3e74165682e3e8c49d3908a508e6aa3d35d/aboutlibraries-6.0.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
