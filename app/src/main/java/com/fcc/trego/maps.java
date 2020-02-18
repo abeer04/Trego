@@ -7,6 +7,9 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -151,18 +154,26 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
                 .icon(smMarkerIcon));
         // icon reference => <a href='https://pngtree.com/so/flower'>flower png from pngtree.com</a>
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
-        {
-            @Override
-            public boolean onMarkerClick(Marker marker)
-            {
-                // Triggered when user click any marker on the map
-
-                return false;
-            }
+        mMap.setOnMarkerClickListener(marker1 -> {
+            // Triggered when user click any marker on the map
+            loadFragment(new MarkerFragment());
+            return false;
         });
 
         mMap.setOnCameraIdleListener(this);
+    }
+
+    private void loadFragment(Fragment fragment)
+    {
+        // create a FragmentManager
+        FragmentManager fm = getFragmentManager();
+        // create a FragmentTransaction to begin the transaction and replace the Fragment
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        // replace the FrameLayout with new Fragment
+        fragmentTransaction.replace(R.id.frameLayout, fragment);
+
+        fragmentTransaction.commit(); // save the changes
     }
 
     @Override
@@ -176,9 +187,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     @Override
     public void onClick(View v) {
-//        restult_back(formatted_address);
-        Intent intent = new Intent(maps.this, ScanQR.class);
-        startActivity(intent);
+        restult_back(formatted_address);
     }
 
     @Override
