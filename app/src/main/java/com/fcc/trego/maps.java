@@ -151,39 +151,16 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
                 .icon(smMarkerIcon));
         // icon reference => <a href='https://pngtree.com/so/flower'>flower png from pngtree.com</a>
 
-//        mMap.setOnMarkerClickListener(this);
-
-        // Setting a custom info window adapter for the google map
-        MarkerInfoWindowAdapter markerInfoWindowAdapter = new MarkerInfoWindowAdapter(getApplicationContext());
-        mMap.setInfoWindowAdapter(markerInfoWindowAdapter);
-
-        View view = markerInfoWindowAdapter.getInfoContents(marker);
-        Button plantBtn = view.findViewById(R.id.btn_plant);
-
-        plantBtn.setOnClickListener(new View.OnClickListener()
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
         {
             @Override
-            public void onClick(View v)
+            public boolean onMarkerClick(Marker marker)
             {
-                Intent intent = new Intent(maps.this, ScanQR.class);
-                startActivity(intent);
+                // Triggered when user click any marker on the map
+
+                return false;
             }
         });
-
-        // adding and showing marker when the map is touched
-//        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
-//        {
-//            @Override
-//            public void onMapClick(LatLng arg0)
-//            {
-//                mMap.clear();
-//                MarkerOptions markerOptions = new MarkerOptions();
-//                markerOptions.position(arg0);
-//                mMap.animateCamera(CameraUpdateFactory.newLatLng(arg0));
-//                Marker marker = mMap.addMarker(markerOptions);
-//                marker.showInfoWindow();
-//            }
-//        });
 
         mMap.setOnCameraIdleListener(this);
     }
