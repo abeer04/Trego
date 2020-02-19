@@ -9,6 +9,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+
+import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+
 public class MarkerFragment extends Fragment
 {
     View view;
@@ -28,6 +32,13 @@ public class MarkerFragment extends Fragment
             //Toast.makeText(getActivity(), "Plant Fragment", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(getActivity(), ScanQR.class);
             startActivity(intent);
+//            IntentIntegrator integrator = new IntentIntegrator(getActivity());
+//            integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+//            integrator.setPrompt("Scan");
+//            integrator.setCameraId(CAMERA_FACING_BACK);
+//            integrator.setBeepEnabled(false);
+//            integrator.setBarcodeImageEnabled(false);
+//            integrator.initiateScan();
         });
 
         // get the reference of Button
