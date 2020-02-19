@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/gen_white">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:id="@+id/cross"
+        android:gravity="center"
+        android:background="#DA5F6A"
+        android:src="@drawable/cross"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/text_failure_dialog"
+        android:layout_below="@+id/cross"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="18sp"
+        android:textColor="@color/gen_black"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_failure_dialog">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="BACK"
+            android:id="@+id/btn_failure_dialog_back"
+            android:layout_marginBottom="20dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="RETRY"
+            android:id="@+id/btn_failure_dialog_retry"
+            android:layout_marginBottom="20dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+</RelativeLayout>

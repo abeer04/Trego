@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/gen_white">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:id="@+id/tick"
+        android:gravity="center"
+        android:background="#6cc070"
+        android:src="@drawable/tick"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/text_success_dialog"
+        android:layout_below="@+id/tick"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="20sp"
+        android:textColor="@color/gen_black"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="OK"
+        android:id="@+id/btn_success_dialog_ok"
+        android:layout_below="@+id/text_success_dialog"
+        android:layout_marginBottom="20dp"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

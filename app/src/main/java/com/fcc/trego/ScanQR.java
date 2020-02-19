@@ -64,6 +64,17 @@ public class ScanQR extends AppCompatActivity
 
                 tv_qr_readTxt.setText(result.getContents());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+
+                if (result.getContents().equals("https://www.intagleo.com/careers/"))
+                {
+                    SuccessDialog alert = new SuccessDialog();
+                    alert.showDialog(this, "Exp +100\nGreen Credits +20");
+                }
+                else
+                {
+                    FailureDialog alert = new FailureDialog();
+                    alert.showDialog(this, "Wrong Location");
+                }
             }
         }
         else
