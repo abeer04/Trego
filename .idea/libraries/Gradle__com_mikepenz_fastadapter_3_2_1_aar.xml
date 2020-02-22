@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.mikepenz:fastadapter:3.2.1@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/9223733009e4a0346646a1d9da660f2f/jetified-fastadapter-3.2.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/9223733009e4a0346646a1d9da660f2f/jetified-fastadapter-3.2.1/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/69970777da38d3e133941d8701de8d65/jetified-fastadapter-3.2.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/69970777da38d3e133941d8701de8d65/jetified-fastadapter-3.2.1/res" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mikepenz/fastadapter/3.2.1/543d0c31454623db70692c7a4a2bfd479224ee33/fastadapter-3.2.1-javadoc.jar!/" />

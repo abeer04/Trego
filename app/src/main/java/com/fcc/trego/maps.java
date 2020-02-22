@@ -19,17 +19,12 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -44,22 +39,27 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.List;
 
-public class maps extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, View.OnClickListener {
+
+public class maps extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, View.OnClickListener, OnSuccessListener<Location> {
 
     private GoogleMap mMap;
     TextView address;
     private FusedLocationProviderClient fusedLocationClient;
-    private RequestQueue requestQueue;
-    JsonObjectRequest addressRes;
+
     String formatted_address;
     Button done;
 
     boolean mLocationPermissionGranted = false;
     String url;
+
+
+    Location currentLoc;
+    LatLng fccMainGround;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -90,8 +90,8 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         }
 
         address = findViewById(R.id.show_address);
-        done = findViewById(R.id.done);
-        done.setOnClickListener(this);
+        //done = findViewById(R.id.done);
+        //done.setOnClickListener(this);
     }
 
     public void restult_back(String result)
@@ -127,9 +127,12 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
                         if (location != null)
                         {
                             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
-                            mMap.setMinZoomPreference(15);
+                            // Zoom in, animating the camera.
+                            mMap.animateCamera(CameraUpdateFactory.zoomIn());
+                            // Zoom out to zoom level 10, animating with a duration of 2 seconds.
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(20), 2000, null);
                             url="https://maps.googleapis.com/maps/api/geocode/json?latlng="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyBAyEhcJM_a1riCY88giw-C5DhJRJiokmY";
-                            Request();
+                            //Request();
                         }
                         else
                         {
@@ -146,7 +149,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         Bitmap smBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
         BitmapDescriptor smMarkerIcon = BitmapDescriptorFactory.fromBitmap(smBitmap);
 
-        LatLng fccMainGround = new LatLng(31.522009, 74.3328702);
+        fccMainGround = new LatLng(31.570716, 74.319829);
         Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(fccMainGround)
                 .title("Plant 1!")
@@ -162,17 +165,28 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         mMap.setOnCameraIdleListener(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        
+        restult_back("-1");
+        super.onBackPressed();
+    }
+
+
+
     private void loadFragment(Fragment fragment)
     {
         // create a FragmentManager
         FragmentManager fm = getFragmentManager();
         // create a FragmentTransaction to begin the transaction and replace the Fragment
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
+        fragmentTransaction.setCustomAnimations(R.animator.enter, R.animator.exit, R.animator.pop_enter, R.animator.pop_exit);
         // replace the FrameLayout with new Fragment
-        fragmentTransaction.replace(R.id.frameLayout, fragment);
+        fragmentTransaction.replace(R.id.frameLayout, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null);
 
         fragmentTransaction.commit(); // save the changes
+
     }
 
     @Override
@@ -181,7 +195,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         final LatLng mPosition;
         mPosition = mMap.getCameraPosition().target;
         url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+mPosition.latitude+","+mPosition.longitude+"&key=AIzaSyBAyEhcJM_a1riCY88giw-C5DhJRJiokmY";
-        Request();
+        //Request();
     }
 
     @Override
@@ -189,42 +203,37 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         restult_back(formatted_address);
     }
 
-    @Override
-    public void onBackPressed()
-    {
-        restult_back("-1");
-        super.onBackPressed();
-    }
 
-    void Request()
-    {
-        requestQueue= Volley.newRequestQueue(this);
-        addressRes= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try
-                {
-                    Object responseA;
-                    responseA = response.getJSONArray("results").get(0);
-                    formatted_address = ((JSONObject) responseA).getString("formatted_address");
-                }
-                catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-                address.setText(formatted_address);
 
-            }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Request();
-                return;
-            }
-        });
-        requestQueue.add(addressRes);
-    }
+//    void Request()
+//    {
+//        requestQueue= Volley.newRequestQueue(this);
+//        addressRes= new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject response) {
+//                try
+//                {
+//                    Object responseA;
+//                    responseA = response.getJSONArray("results").get(0);
+//                    formatted_address = ((JSONObject) responseA).getString("formatted_address");
+//                }
+//                catch (JSONException e)
+//                {
+//                    e.printStackTrace();
+//                }
+//                address.setText(formatted_address);
+//
+//            }
+//
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Request();
+//                return;
+//            }
+//        });
+//        requestQueue.add(addressRes);
+//    }
 
     private boolean checkMapServices()
     {
@@ -249,7 +258,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     public boolean isMapsEnabled()
     {
-        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE );
 
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
         {
@@ -334,5 +343,58 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
     public void onPointerCaptureChanged(boolean hasCapture)
     {
 
+    }
+
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null)
+        {
+            if (result.getContents() == null)
+            {
+                Log.e("Scan*******", "Cancelled scan");
+            }
+            else
+            {
+                Log.e("Scan", "Scanned");
+
+                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+
+
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this);
+
+
+            }
+        }
+        else
+        {
+            // This is important, otherwise the result will not be passed to the fragment
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+
+    @Override
+    public void onSuccess(Location location) {
+        currentLoc=location;
+        float[] results=new float[1];
+        Location.distanceBetween(currentLoc.getLatitude(), currentLoc.getLongitude(),
+                fccMainGround.latitude, fccMainGround.longitude, results);
+
+        if (results[0]<6)
+        {
+            SuccessDialog alert = new SuccessDialog();
+            alert.showDialog(this, "Exp +100\nGreen Credits +20");
+        }
+        else
+        {
+            FailureDialog alert = new FailureDialog();
+            alert.showDialog(this, "Wrong Location");
+        }
     }
 }

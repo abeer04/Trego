@@ -30,15 +30,17 @@ public class MarkerFragment extends Fragment
         plantButton.setOnClickListener(v -> {
             // display a message by using a Toast
             //Toast.makeText(getActivity(), "Plant Fragment", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(getActivity(), ScanQR.class);
-            startActivity(intent);
-//            IntentIntegrator integrator = new IntentIntegrator(getActivity());
-//            integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-//            integrator.setPrompt("Scan");
-//            integrator.setCameraId(CAMERA_FACING_BACK);
-//            integrator.setBeepEnabled(false);
-//            integrator.setBarcodeImageEnabled(false);
-//            integrator.initiateScan();
+            //Intent intent = new Intent(getActivity(), ScanQR.class);
+            //startActivity(intent);
+            IntentIntegrator integrator = new IntentIntegrator(getActivity());
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+            integrator.setPrompt("Scan");
+            integrator.setCameraId(CAMERA_FACING_BACK);
+            integrator.setOrientationLocked(true);
+            integrator.setCaptureActivity(ScanQR.class);
+            integrator.setBeepEnabled(false);
+            integrator.setBarcodeImageEnabled(false);
+            integrator.initiateScan();
         });
 
         // get the reference of Button
