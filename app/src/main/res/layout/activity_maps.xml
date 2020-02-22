@@ -30,9 +30,8 @@
             android:id="@+id/show_address"
             android:text=""
             android:gravity="center_horizontal"
-            android:textSize="20sp" />
+            android:textSize="20sp"/>
     </androidx.cardview.widget.CardView>
-
 
 <!--    <Button-->
 <!--        android:layout_width="wrap_content"-->
@@ -45,25 +44,22 @@
 <!--        android:layout_alignParentBottom="true"-->
 <!--        android:layout_centerHorizontal="true"-->
 <!--        android:layout_marginBottom="10dp"/>-->
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="2"
-    android:orientation="vertical"
-    >
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
 
-    </View>
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        />
-
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:weightSum="2"
+        android:orientation="vertical">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.5">
+        </View>
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
 
 </RelativeLayout>

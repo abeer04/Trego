@@ -21,7 +21,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,14 +35,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.util.List;
-
+import java.util.ArrayList;
 
 public class maps extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, View.OnClickListener, OnSuccessListener<Location> {
 
@@ -52,14 +49,14 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
     private FusedLocationProviderClient fusedLocationClient;
 
     String formatted_address;
-    Button done;
+//    Button done;
 
     boolean mLocationPermissionGranted = false;
     String url;
 
-
     Location currentLoc;
-    LatLng fccMainGround;
+//    LatLng fccMainGround;
+    ArrayList<LatLng> positions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -81,12 +78,12 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
             }
             else
             {
-                restult_back("-1");
+                result_back("-1");
             }
         }
         else
         {
-            restult_back("-1");
+            result_back("-1");
         }
 
         address = findViewById(R.id.show_address);
@@ -94,7 +91,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         //done.setOnClickListener(this);
     }
 
-    public void restult_back(String result)
+    public void result_back(String result)
     {
         Intent intent = new Intent();
         intent.putExtra("address", result);
@@ -149,11 +146,26 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         Bitmap smBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
         BitmapDescriptor smMarkerIcon = BitmapDescriptorFactory.fromBitmap(smBitmap);
 
-        fccMainGround = new LatLng(31.570716, 74.319829);
-        Marker marker = mMap.addMarker(new MarkerOptions()
-                .position(fccMainGround)
-                .title("Plant 1!")
-                .icon(smMarkerIcon));
+        positions.add(new LatLng(31.4469031, 74.2681719)); // UCP
+        positions.add(new LatLng(31.521889, 74.3326335)); // FCC
+        positions.add(new LatLng(31.5365019, 74.3383935)); // KC
+        positions.add(new LatLng(31.5687544, 74.305066)); // NCA
+        positions.add(new LatLng(31.4699827, 74.4088985)); // LUMS
+        positions.add(new LatLng(31.570716, 74.319829)); // Abeer
+
+        for(int i = 0 ; i < positions.size() ; i++)
+        {
+            mMap.addMarker(new MarkerOptions()
+                    .position(positions.get(i))
+                    .title("Plant " + i + "!")
+                    .icon(smMarkerIcon));
+        }
+
+//        fccMainGround = new LatLng(31.570716, 74.319829);
+//        Marker marker = mMap.addMarker(new MarkerOptions()
+//                .position(fccMainGround)
+//                .title("Plant 1!")
+//                .icon(smMarkerIcon));
         // icon reference => <a href='https://pngtree.com/so/flower'>flower png from pngtree.com</a>
 
         mMap.setOnMarkerClickListener(marker1 -> {
@@ -166,13 +178,11 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
     }
 
     @Override
-    public void onBackPressed() {
-        
-        restult_back("-1");
+    public void onBackPressed()
+    {
+        result_back("-1");
         super.onBackPressed();
     }
-
-
 
     private void loadFragment(Fragment fragment)
     {
@@ -186,7 +196,6 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
                 .addToBackStack(null);
 
         fragmentTransaction.commit(); // save the changes
-
     }
 
     @Override
@@ -200,10 +209,8 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     @Override
     public void onClick(View v) {
-        restult_back(formatted_address);
+        result_back(formatted_address);
     }
-
-
 
 //    void Request()
 //    {
@@ -345,9 +352,6 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     }
 
-
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -364,11 +368,8 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
 
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
 
-
                 fusedLocationClient.getLastLocation()
                         .addOnSuccessListener(this);
-
-
             }
         }
         else
@@ -378,15 +379,15 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         }
     }
 
-
     @Override
-    public void onSuccess(Location location) {
-        currentLoc=location;
-        float[] results=new float[1];
+    public void onSuccess(Location location)
+    {
+        currentLoc = location;
+        float[] results = new float[1];
         Location.distanceBetween(currentLoc.getLatitude(), currentLoc.getLongitude(),
-                fccMainGround.latitude, fccMainGround.longitude, results);
+                positions.get(5).latitude, positions.get(5).longitude, results);
 
-        if (results[0]<6)
+        if (results[0] < 6)
         {
             SuccessDialog alert = new SuccessDialog();
             alert.showDialog(this, "Exp +100\nGreen Credits +20");
