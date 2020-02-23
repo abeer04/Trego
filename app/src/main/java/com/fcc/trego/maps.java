@@ -26,8 +26,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,10 +39,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class maps extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, View.OnClickListener, OnSuccessListener<Location> {
 
@@ -64,6 +72,45 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        String apiKey = getString(R.string.google_maps_key);
+
+        /**
+         * Initialize Places. For simplicity, the API key is hard-coded. In a production
+         * environment we recommend using a secure mechanism to manage API keys.
+         */
+        if (!Places.isInitialized()) {
+            Places.initialize(this, apiKey);
+        }
+
+// Create a new Places client instance.
+        //PlacesClient placesClient = Places.createClient(this);
+
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.LAT_LNG,Place.Field.ID, Place.Field.NAME));
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                LatLng ll=place.getLatLng();
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(ll.latitude,ll.longitude),15));  //move camera to location
+
+                mMap.animateCamera(CameraUpdateFactory.zoomIn());
+                // Zoom out to zoom level 10, animating with a duration of 2 seconds.
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+
+            }
+        });
+
+
+
         if (checkMapServices())
         {
             getLocationPermission();
@@ -86,7 +133,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
             result_back("-1");
         }
 
-        address = findViewById(R.id.show_address);
+        //address = findViewById(R.id.show_address);
         //done = findViewById(R.id.done);
         //done.setOnClickListener(this);
     }
@@ -128,7 +175,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
                             mMap.animateCamera(CameraUpdateFactory.zoomIn());
                             // Zoom out to zoom level 10, animating with a duration of 2 seconds.
                             mMap.animateCamera(CameraUpdateFactory.zoomTo(20), 2000, null);
-                            url="https://maps.googleapis.com/maps/api/geocode/json?latlng="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyBAyEhcJM_a1riCY88giw-C5DhJRJiokmY";
+                            //url="https://maps.googleapis.com/maps/api/geocode/json?latlng="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyBAyEhcJM_a1riCY88giw-C5DhJRJiokmY";
                             //Request();
                         }
                         else
@@ -180,8 +227,12 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
     @Override
     public void onBackPressed()
     {
-        result_back("-1");
-        super.onBackPressed();
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1){
+            finish();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     private void loadFragment(Fragment fragment)

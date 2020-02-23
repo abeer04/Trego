@@ -18,19 +18,16 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/validity"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="bottom"
         android:paddingTop="30dp"
         android:layout_margin="10dp">
-        <TextView
+        <fragment android:id="@+id/autocomplete_fragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="#333333"
-            android:id="@+id/show_address"
-            android:text=""
-            android:gravity="center_horizontal"
-            android:textSize="20sp"/>
+            android:layout_height="wrap_content"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            />
     </androidx.cardview.widget.CardView>
 
 <!--    <Button-->
