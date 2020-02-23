@@ -24,12 +24,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cunoraz.gifview.library.GifView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,7 +41,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -54,6 +53,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     private GoogleMap mMap;
     TextView address;
+
     private FusedLocationProviderClient fusedLocationClient;
 
     String formatted_address;
@@ -61,6 +61,7 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     boolean mLocationPermissionGranted = false;
     String url;
+
 
     Location currentLoc;
 //    LatLng fccMainGround;
@@ -350,6 +351,8 @@ public class maps extends AppCompatActivity implements OnMapReadyCallback, Googl
             }
         }
     }
+
+
 
     public boolean isServicesOK()
     {
